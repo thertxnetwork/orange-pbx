@@ -14,9 +14,10 @@
   "author": "Phoenix PBX",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "mysql2": "^3.6.5",
-    "node-telegram-bot-api": "^0.64.0"
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "mysql2": "^3.11.5",
+    "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",

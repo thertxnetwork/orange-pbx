@@ -1,36 +1,16 @@
-import crypto from 'crypto';
-import Database from '../database/database';
+import apiService from './apiService';
 import { User, TelegramSession } from '../database/models';
 import config from '../config/config';
 
 class AuthService {
   private sessions: Map<number, TelegramSession> = new Map();
-  private db = Database.getInstance();
 
   /**
    * Authenticate user with username and password
    */
   public async login(chatId: number, username: string, password: string): Promise<{ success: boolean; message: string; user?: User }> {
     try {
-      const sql = 'SELECT * FROM pkg_user WHERE username = ? LIMIT 1';
-      const users = await this.db.query<User[]>(sql, [username]);
-
-      if (!users || users.length === 0) {
-        return { success: false, message: '❌ User not found' };
-      }
-
-      const user = users[0];
-
-      if (user.active !== 1) {
-        return { success: false, message: '❌ Account is inactive' };
-      }
-
-      // Verify password (MagnusBilling uses SHA1)
-      const hashedPassword = crypto.createHash('sha1').update(password).digest('hex');
-
-      if (user.password !== hashedPassword) {
-        return { success: false, message: '❌ Invalid password' };
-      }
+      const user = await apiService.login(username, password);
 
       // Create session
       const session: TelegramSession = {
@@ -48,9 +28,9 @@ class AuthService {
         message: `✅ Welcome ${user.firstname || user.username}!`,
         user,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      return { success: false, message: '❌ Authentication failed' };
+      return { success: false, message: `❌ ${error.message || 'Authentication failed'}` };
     }
   }
 
